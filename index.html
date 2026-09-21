@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Para ti</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Baloo+2:wght@500;700&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *{ box-sizing: border-box; }
+  html,body{
+    margin:0; padding:0; width:100%; height:100%; overflow:hidden;
+    background: radial-gradient(ellipse at top, #2a1f45 0%, #140f28 55%, #08061a 100%);
+    font-family: 'Poppins', sans-serif;
+  }
+  body{
+    display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
+    position:relative;
+  }
+
+  #stars{ position:fixed; inset:0; overflow:hidden; z-index:0; pointer-events:none; }
+  .star{
+    position:absolute; background:#fff; border-radius:50%;
+    box-shadow:0 0 4px rgba(255,255,255,.8);
+    animation: twinkle ease-in-out infinite;
+  }
+  @keyframes twinkle{ 0%,100%{opacity:.2} 50%{opacity:1} }
+
+  .header{
+    position:relative; z-index:5; text-align:center;
+    margin-top:9vh; padding:0 24px; max-width:90vw;
+    opacity:0; animation: fadeIn 2.2s ease-in-out 0.3s forwards;
+  }
+  .titulo-linea1{
+    display:block; font-family:'Pacifico',cursive; font-weight:400;
+    font-size:clamp(1.5rem, 5.5vw, 2.3rem); color:#ffe066;
+    text-shadow:0 0 12px rgba(255,220,110,.85), 0 0 30px rgba(255,190,60,.5);
+    margin-bottom:10px;
+  }
+  .titulo-linea2{
+    display:block; font-family:'Poppins',sans-serif; font-weight:400;
+    font-size:clamp(.85rem, 2.6vw, 1rem); color:rgba(255,255,255,.78);
+  }
+  @keyframes fadeIn{ from{opacity:0} to{opacity:1} }
+
+  #floating-flowers, #floating-phrases{
+    position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:3;
+  }
+  .floating-flower{
+    position:absolute; bottom:-10vh;
+    filter: drop-shadow(0 0 6px rgba(255,221,37,0.7));
+    animation-name: floatUpFlower;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+    opacity:0;
+  }
+  @keyframes floatUpFlower{
+    0%   { transform: translateY(0) translateX(0) rotate(0deg); opacity:0; }
+    8%   { opacity:1; }
+    90%  { opacity:1; }
+    100% { transform: translateY(-115vh) translateX(var(--drift)) rotate(360deg); opacity:0; }
+  }
+
+  .floating-phrase{
+    position:absolute; bottom:-10vh;
+    max-width:min(78vw, 300px);
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,224,110,0.3);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    padding: 9px 18px;
+    border-radius: 999px;
+    font-family: 'Baloo 2', cursive;
+    font-weight: 600;
+    font-size: clamp(0.82rem, 2.4vw, 1.05rem);
+    color: #fff4d6;
+    text-shadow: 0 0 10px rgba(255,220,140,0.45);
+    text-align:center;
+    line-height:1.35;
+    animation-name: floatUpPhrase;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+    opacity:0;
+  }
+  @keyframes floatUpPhrase{
+    0%   { transform: translateY(0) translateX(0); opacity:0; }
+    10%  { opacity:1; }
+    88%  { opacity:1; }
+    100% { transform: translateY(-108vh) translateX(var(--drift)); opacity:0; }
+  }
+
+  #mute{
+    position:fixed; top:24px; right:26px; width:34px; height:34px; z-index:10;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    color:rgba(255,235,180,.55); font-size:16px; user-select:none;
+    transition:color .3s ease, opacity .3s ease; opacity:0;
+  }
+  #mute:hover{ color:#ffe066; }
+</style>
+</head>
+<body>
+
+<div id="stars"></div>
+<div id="floating-flowers"></div>
+<div id="floating-phrases"></div>
+
+<div class="header">
+  <span class="titulo-linea1">Eres una persona increíble pequeña Ash💛</span>
+  <span class="titulo-linea2">Un pequeño detalle, solo porque sí :), dale tap a la pantalla sjsjsjs es para que suene la musica eh?</span>
+</div>
+
+<!-- 🎵 Pon aquí tu propia canción: nómbrala "musica.mp3" y súbela
+     a esta misma carpeta, junto a este archivo. Se repite en bucle sola. -->
+<audio id="bgMusic" loop src="musica.mp3"></audio>
+<div id="mute" title="Silenciar">♪</div>
+
+<script>
+(function(){
+
+  // ---------- Estrellas ----------
+  const starsWrap = document.getElementById('stars');
+  for(let i=0;i<90;i++){
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = 1 + Math.random()*2;
+    s.style.width = size+'px';
+    s.style.height = size+'px';
+    s.style.left = Math.random()*100+'vw';
+    s.style.top = Math.random()*100+'vh';
+    s.style.animationDuration = (2+Math.random()*3)+'s';
+    s.style.animationDelay = (Math.random()*3)+'s';
+    starsWrap.appendChild(s);
+  }
+
+  // ---------- Florecitas flotando ----------
+  const flowerContainer = document.getElementById('floating-flowers');
+  const FLOWER_EMOJIS = ['🌼','🌻'];
+  function spawnFlower(){
+    const el = document.createElement('div');
+    el.className = 'floating-flower';
+    el.textContent = FLOWER_EMOJIS[Math.floor(Math.random()*FLOWER_EMOJIS.length)];
+    const size = 14 + Math.random()*20;
+    const duration = 9 + Math.random()*8;
+    const drift = (Math.random()*200 - 100);
+    el.style.left = (Math.random()*100) + 'vw';
+    el.style.fontSize = size + 'px';
+    el.style.animationDuration = duration + 's';
+    el.style.setProperty('--drift', drift + 'px');
+    flowerContainer.appendChild(el);
+    el.addEventListener('animationend', () => el.remove());
+  }
+  setInterval(spawnFlower, 850);
+  for(let i=0;i<5;i++) setTimeout(spawnFlower, i*350);
+
+  // ---------- Palabras bonitas flotando ----------
+  const phraseContainer = document.getElementById('floating-phrases');
+  const PHRASES = [
+    "Eres una persona increíble",
+    "Tienes un corazón muy bonito",
+    "Eres muy inteligente",
+    "Buena amiga, siempre",
+    "Sigue así, vas muy bien",
+    "Tu amistad vale mucho",
+    "Eres muy especial",
+    "Iluminas donde vas",
+    "Eres más fuerte de lo que crees",
+    "Mereces cosas buenas",
+    "Nunca cambies",
+    "Eres un gran ser humano",
+    "Tu esfuerzo se nota",
+    "Gracias por existir",
+    "Eres única",
+    "Vas a lograr grandes cosas"
+  ];
+  function spawnPhrase(){
+    const el = document.createElement('div');
+    el.className = 'floating-phrase';
+    el.textContent = PHRASES[Math.floor(Math.random()*PHRASES.length)];
+    const duration = 14 + Math.random()*7;
+    const drift = (Math.random()*140 - 70);
+    el.style.left = (8 + Math.random()*76) + 'vw';
+    el.style.animationDuration = duration + 's';
+    el.style.setProperty('--drift', drift + 'px');
+    phraseContainer.appendChild(el);
+    el.addEventListener('animationend', () => el.remove());
+  }
+  setInterval(spawnPhrase, 2600);
+  setTimeout(spawnPhrase, 700);
+
+  // ---------- Música ----------
+  const audio = document.getElementById('bgMusic');
+  const muteBtn = document.getElementById('mute');
+  let musicStarted = false, muted = false;
+
+  function tryStartMusic(){
+    if(musicStarted) return;
+    musicStarted = true;
+    audio.volume = 0;
+    audio.play().then(()=>{
+      let v = 0;
+      const fade = setInterval(()=>{
+        v += 0.025;
+        audio.volume = Math.min(0.55, v);
+        if(v >= 0.55) clearInterval(fade);
+      }, 90);
+    }).catch(()=>{ musicStarted = false; }); // si falla, se reintenta en el siguiente toque
+  }
+  document.addEventListener('click', tryStartMusic);
+  document.addEventListener('touchstart', tryStartMusic);
+
+  setTimeout(()=>{ muteBtn.style.opacity = '1'; }, 900);
+  muteBtn.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    tryStartMusic();
+    muted = !muted;
+    audio.muted = muted;
+    muteBtn.textContent = muted ? '✕' : '♪';
+  });
+
+})();
+</script>
+</body>
+</html>
